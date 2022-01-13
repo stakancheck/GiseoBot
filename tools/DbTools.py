@@ -3,6 +3,7 @@ from loader import bot
 from aiogram import types
 from .PyGiseo import Parse
 from .base_model import *
+from decouple import config
 from .ImageConstructor import creation_image
 
 project_path = config('PATH_P')
