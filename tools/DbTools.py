@@ -1,4 +1,6 @@
 import os
+from datetime import datetime
+
 from loader import bot
 from aiogram import types
 from .PyGiseo import Parse
@@ -45,8 +47,9 @@ async def send_photo(call: types.CallbackQuery, file: str, mode=1, caption=None,
             await call.message.edit_media(types.InputMediaPhoto(types.InputFile(path_image)))
             return True
         else:
-            if file == 'parse_schedule.png':
-                await call.answer('Занятий сегодня нет')
+            date = datetime.now().weekday()
+            if file == f'parse_schedule_{date}.png':
+                await call.answer('Занятий нет')
             else:
                 await call.answer('Информации нет на сайте!')
             return False

@@ -1,12 +1,72 @@
-2022-01-06 22:39:36,117: INFO -> Bot: Ёлектронный дневник [@giseo_bot]
-2022-01-06 22:39:36,117: INFO -> Start polling.
-2022-01-06 22:40:47,259: INFO -> Create user 1050426218
-2022-01-06 22:40:47,260: INFO -> User 1050426218 already added to DB
-2022-01-06 22:40:47,260: INFO -> Start get page
-2022-01-06 22:40:52,025: INFO -> Complete get page
-2022-01-06 22:40:53,178: INFO -> Successful login, user: 1050426218
-2022-01-06 22:41:03,232: ERROR -> Skip warning error!
-2022-01-06 22:41:06,453: INFO -> Successes save final_marks for user 1050426218
-2022-01-06 22:41:08,770: INFO -> Successes save middle_marks_year for user 1050426218
-2022-01-06 22:43:21,084: INFO -> Stop polling...
-2022-01-06 22:43:21,085: WARNING -> Goodbye!
+2022-01-13 16:49:48,181: INFO -> Bot: Ёлектронный дневник [@giseo_bot]
+2022-01-13 16:49:48,181: INFO -> Start polling.
+2022-01-13 16:50:02,885: INFO -> Create user 1050426218
+2022-01-13 16:50:02,887: INFO -> User 1050426218 already added to DB
+2022-01-13 16:50:02,887: INFO -> Start get page
+2022-01-13 16:50:05,282: INFO -> Complete get page
+2022-01-13 16:50:06,704: INFO -> Successful login, user: 1050426218
+2022-01-13 16:50:12,956: INFO -> Successes save final_marks for user 1050426218
+2022-01-13 16:50:15,785: INFO -> Successes save middle_marks_year for user 1050426218
+2022-01-13 16:50:20,021: INFO -> Successes save middle_marks_period for period 1 user 1050426218
+2022-01-13 16:50:22,550: INFO -> Successes save middle_marks_period for period 2 user 1050426218
+2022-01-13 16:50:24,733: INFO -> Successes save middle_marks_period for period 3 user 1050426218
+2022-01-13 16:50:26,591: INFO -> Successes save middle_marks_period for period 4 user 1050426218
+2022-01-13 16:50:27,194: INFO -> Start parse schedule for user 1050426218
+2022-01-13 16:50:30,296: INFO -> Successes save schedule 0 for user 1050426218
+2022-01-13 16:50:30,626: INFO -> Successes save schedule 1 for user 1050426218
+2022-01-13 16:50:30,879: INFO -> Successes save schedule 2 for user 1050426218
+2022-01-13 16:50:31,153: INFO -> Successes save schedule 3 for user 1050426218
+2022-01-13 16:50:31,404: INFO -> Successes save schedule 4 for user 1050426218
+2022-01-13 16:50:31,670: INFO -> Successes save schedule 5 for user 1050426218
+2022-01-13 16:50:33,940: INFO -> Successes quit from giseo for user 1050426218
+2022-01-13 17:21:22,377: ERROR -> Cause exception while getting updates.
+Traceback (most recent call last):
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiohttp\connector.py", line 986, in _wrap_create_connection
+    return await self._loop.create_connection(*args, **kwargs)  # type: ignore[return-value]  # noqa
+  File "C:\Users\artem\AppData\Local\Programs\Python\Python39\lib\asyncio\base_events.py", line 1056, in create_connection
+    raise exceptions[0]
+  File "C:\Users\artem\AppData\Local\Programs\Python\Python39\lib\asyncio\base_events.py", line 1041, in create_connection
+    sock = await self._connect_sock(
+  File "C:\Users\artem\AppData\Local\Programs\Python\Python39\lib\asyncio\base_events.py", line 955, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Users\artem\AppData\Local\Programs\Python\Python39\lib\asyncio\proactor_events.py", line 702, in sock_connect
+    return await self._proactor.connect(sock, address)
+  File "C:\Users\artem\AppData\Local\Programs\Python\Python39\lib\asyncio\windows_events.py", line 812, in _poll
+    value = callback(transferred, key, ov)
+  File "C:\Users\artem\AppData\Local\Programs\Python\Python39\lib\asyncio\windows_events.py", line 599, in finish_connect
+    ov.getresult()
+ConnectionRefusedError: [WinError 1225] ”даленный компьютер отклонил это сетевое подключение
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiogram\bot\api.py", line 139, in make_request
+    async with session.post(url, data=req, **kwargs) as response:
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiohttp\client.py", line 1138, in __aenter__
+    self._resp = await self._coro
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiohttp\client.py", line 535, in _request
+    conn = await self._connector.connect(
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiohttp\connector.py", line 542, in connect
+    proto = await self._create_connection(req, traces, timeout)
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiohttp\connector.py", line 907, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiohttp\connector.py", line 1206, in _create_direct_connection
+    raise last_exc
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiohttp\connector.py", line 1175, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiohttp\connector.py", line 992, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host api.telegram.org:443 ssl:default [”даленный компьютер отклонил это сетевое подключение]
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 381, in start_polling
+    updates = await self.bot.get_updates(
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiogram\bot\bot.py", line 110, in get_updates
+    result = await self.request(api.Methods.GET_UPDATES, payload)
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiogram\bot\base.py", line 231, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "D:\Projects\GiseoBot\venv\lib\site-packages\aiogram\bot\api.py", line 142, in make_request
+    raise exceptions.NetworkError(f"aiohttp client throws an error: {e.__class__.__name__}: {e}")
+aiogram.utils.exceptions.NetworkError: Aiohttp client throws an error: ClientConnectorError: Cannot connect to host api.telegram.org:443 ssl:default [”даленный компьютер отклонил это сетевое подключение]

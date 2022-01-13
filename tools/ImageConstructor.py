@@ -8,9 +8,6 @@ from decouple import config
 import matplotlib
 import matplotlib.pyplot as plt
 from tools import DbTools, base_model
-from prettytable import PrettyTable
-
-pretty_table = PrettyTable()
 matplotlib.use('Agg')
 project_path = config('PATH_P')
 

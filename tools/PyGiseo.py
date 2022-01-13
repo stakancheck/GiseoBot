@@ -146,13 +146,9 @@ class Parse:
         in_login.send_keys(self.login)
         in_password = driver.find_element_by_xpath(
             '/html/body/div[2]/div[1]/div/div/div[2]/div[1]/div/div/div/div[9]/input')
-        if not self.DEBUG:
-            cipher = Fernet(cipher_key)
-            password_not_crypt = cipher.decrypt(self.password.encode()).decode()
-            in_password.send_keys(password_not_crypt)
-        else:
-            in_password.send_keys(self.password)
-
+        cipher = Fernet(cipher_key)
+        password_not_crypt = cipher.decrypt(self.password.encode()).decode()
+        in_password.send_keys(password_not_crypt)
         self.progress = 26
         # Try to login with already entered login and password
         try:
@@ -170,15 +166,19 @@ class Parse:
         except:
             logging.error(f'Skip warning error!')
 
-        time.sleep(self.TIME_SLEEP)
-        self.parse_final(driver)
-        time.sleep(self.TIME_SLEEP)
-        self.parse_middle_marks_year(driver)
-        time.sleep(self.TIME_SLEEP)
-        self.parse_middle_marks_period(driver)
-        time.sleep(self.TIME_SLEEP)
-        self.parse_schedule(driver)
-        self.quit_giseo(driver)
+
+        try:
+            time.sleep(self.TIME_SLEEP)
+            self.parse_final(driver)
+            time.sleep(self.TIME_SLEEP)
+            self.parse_middle_marks_year(driver)
+            time.sleep(self.TIME_SLEEP)
+            self.parse_middle_marks_period(driver)
+            time.sleep(self.TIME_SLEEP)
+            self.parse_schedule(driver)
+            self.quit_giseo(driver)
+        except Exception as e:
+            logging.error(e)
 
     def parse_schedule(self, driver):
         logging.info(f'Start parse schedule for user {self.chat_id}')
@@ -224,23 +224,23 @@ class Parse:
 
         # pprint(data)
 
-        data_local_tb = []
-        for item in data:
-            # print(item['date'])
-            # 2021-10-04
-            # 2021-10-05
-
-            # print(f"{item['date']} ----- {datetime.date.today()}")
-            # item['date'] == str(datetime.date.today()) - datetime.timedelta(days=1) условие для вчера
-            date = datetime.datetime.strptime(item['date'], '%Y-%m-%d')
-            if datetime.date.today().weekday() != 6:
-                if item['date'] == str(datetime.date.today()) or \
-                        item['date'] == str(datetime.date.today() + datetime.timedelta(days=1)):
-                    data_local_tb.append(item)
-            else:
-                if item['date'] == str(datetime.date.today() + datetime.timedelta(days=1)) or \
-                        item['date'] == str(datetime.date.today() + datetime.timedelta(days=2)):
-                    data_local_tb.append(item)
+        data_local_tb = data
+        # for item in data:
+        #     # print(item['date'])
+        #     # 2021-10-04
+        #     # 2021-10-05
+        #
+        #     # print(f"{item['date']} ----- {datetime.date.today()}")
+        #     # item['date'] == str(datetime.date.today()) - datetime.timedelta(days=1) условие для вчера
+        #     date = datetime.datetime.strptime(item['date'], '%Y-%m-%d')
+        #     if datetime.date.today().weekday() != 6:
+        #         if item['date'] == str(datetime.date.today()) or \
+        #                 item['date'] == str(datetime.date.today() + datetime.timedelta(days=1)):
+        #             data_local_tb.append(item)
+        #     else:
+        #         if item['date'] == str(datetime.date.today() + datetime.timedelta(days=1)) or \
+        #                 item['date'] == str(datetime.date.today() + datetime.timedelta(days=2)):
+        #             data_local_tb.append(item)
 
         # pprint(data_local_tb)
         # print(str(datetime.date.today() - datetime.timedelta(days=1)))
@@ -250,13 +250,13 @@ class Parse:
         model.execute()
 
         text = {
-            '0': [[], []],
-            '1': [[], []],
-            '2': [[], []],
-            '3': [[], []],
-            '4': [[], []],
-            '5': [[], []],
-            '6': [[], []],
+            '0': [],
+            '1': [],
+            '2': [],
+            '3': [],
+            '4': [],
+            '5': [],
+            '6': []
         }
 
         if data_local_tb:
@@ -265,44 +265,12 @@ class Parse:
                 date = datetime.datetime.strptime(item['date'], '%Y-%m-%d')
                 # print(date.weekday())
                 # weekday 0 monday 6 sunday
-                mass = text[str(date.weekday())][0]
-
-                # if len(item['homework']) > 25:
-                #     homework_text = item['homework'].split()
-                #     print(homework_text)
-                #     text = ''
-                #     counter = 0
-                #     for item in homework_text:
-                #         if counter > 25:
-                #             text += '\n'
-                #             counter = 0
-                #         text += item + ' '
-                #         counter += len(item) + 1
-                #     # final_text = ''
-                #     # text = ''
-                #     # for i in homework_text:
-                #     #     if len(text) + len(i) < 31:
-                #     #         text += i + ' '
-                #     #     else:
-                #     #         final_text += text + '\n'
-                #     #         text = ''
-                #     # homework_text = final_text + text
-                #     # size = len(homework_text)
-                #     # homework_text = " ".join(homework_text[:size // 2:]) + "\n" + " ".join(homework_text[size // 2::])
-                #     homework_text = text
-                #     print(homework_text)
-                #
-                # else:
-                #     homework_text = item['homework']
+                mass = text[str(date.weekday())]
                 homework_text = item['homework']
 
-                if homework_text:
-                    mass_hw = text[str(date.weekday())][1]
-                    mass_hw.append([item['affair'], homework_text])
-                    text[str(date.weekday())][1] = mass_hw
-
                 mass.append([f"{item['time_start'][:-3]} - {item['time_end'][:-3]}", item['affair']])
-                text[str(date.weekday())][0] = mass
+                text[str(date.weekday())] = mass
+
                 # Создание записи в базе данных
                 d = base_model.Schedule.create(chat_id=self.chat_id,
                                                time=f"{item['time_start'][:-3]} - {item['time_end'][:-3]}",
@@ -312,20 +280,14 @@ class Parse:
                 d.save()
 
         labels = ('Время', 'Урок')
-        labels_hw = ('Урок', 'Домашнее задание')
 
         for i in range(6):
             if os.path.exists(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_schedule_{i}.png'):
                 os.remove(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_schedule_{i}.png')
-            if os.path.exists(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_homework_{i}.png'):
-                os.remove(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_homework_{i}.png')
+
         for key in text.keys():
-            if text[str(key)][1]:
-                ImageConstructor.creation_image(text[str(key)][1], labels_hw, self.theme, self.chat_id,
-                                                f'parse_homework_{key}.png', is_homework=True)
-                logging.info(f'Successes save homework {key} for user {self.chat_id}')
-            if text[str(key)][0]:
-                ImageConstructor.creation_image(text[str(key)][0], labels, self.theme, self.chat_id,
+            if text[str(key)]:
+                ImageConstructor.creation_image(text[str(key)], labels, self.theme, self.chat_id,
                                                 f'parse_schedule_{key}.png')
                 logging.info(f'Successes save schedule {key} for user {self.chat_id}')
 
@@ -337,55 +299,52 @@ class Parse:
         """
 
         # Path to table marks
-        try:
-            driver.find_element_by_xpath('/html/body/div[1]/div[4]/nav/ul/li[3]/a').click()
-            driver.find_element_by_xpath(
-                '/html/body/div[2]/div[1]/div/div/div/div[2]/div/table/tbody/tr[2]/td[2]/a').click()
-            driver.find_element_by_xpath(
-                '/html/body/div[2]/div[1]/div/div/div/div[3]/div/div/div[1]/button[1]/span[2]').click()
-            time.sleep(self.TIME_SLEEP)
-            html = driver.page_source
 
-            # Очистка базы от старых записей
-            model = base_model.FinalMarks.delete().where(base_model.FinalMarks.chat_id == self.chat_id)
-            model.execute()
+        driver.find_element_by_xpath('/html/body/div[1]/div[4]/nav/ul/li[3]/a').click()
+        driver.find_element_by_xpath(
+            '/html/body/div[2]/div[1]/div/div/div/div[2]/div/table/tbody/tr[2]/td[2]/a').click()
+        driver.find_element_by_xpath(
+            '/html/body/div[2]/div[1]/div/div/div/div[3]/div/div/div[1]/button[1]/span[2]').click()
+        time.sleep(self.TIME_SLEEP)
+        html = driver.page_source
 
-            # Find elements of table
-            soup = BeautifulSoup(html, 'html5lib')
-            data = []
+        # Очистка базы от старых записей
+        model = base_model.FinalMarks.delete().where(base_model.FinalMarks.chat_id == self.chat_id)
+        model.execute()
 
-            if soup.find('table', class_='table-print-num'):
-                rows = soup.find('table', class_='table-print-num').find_all('tr')
-                rows.pop(0)  # delete waste info
-                rows.pop(0)  # delete waste info
+        # Find elements of table
+        soup = BeautifulSoup(html, 'html5lib')
+        data = []
 
-                # Add info in list
-                for i in range(len(rows)):
-                    t = rows[i].find_all('td')
-                    if len(t[1].text) > 30:
-                        name = t[1].text[:29] + '...'
-                    else:
-                        name = t[1].text
-                    data.append([name, t[2].text, t[3].text, t[4].text, t[5].text, t[6].text])
+        if soup.find('table', class_='table-print-num'):
+            rows = soup.find('table', class_='table-print-num').find_all('tr')
+            rows.pop(0)  # delete waste info
+            rows.pop(0)  # delete waste info
 
-                    base_model.FinalMarks.create(chat_id=self.chat_id,
-                                                 subject=name,
-                                                 quarter_1=t[2].text,
-                                                 quarter_2=t[3].text,
-                                                 quarter_3=t[4].text,
-                                                 quarter_4=t[5].text,
-                                                 final_mark=t[6].text)
+            # Add info in list
+            for i in range(len(rows)):
+                t = rows[i].find_all('td')
+                if len(t[1].text) > 30:
+                    name = t[1].text[:29] + '...'
+                else:
+                    name = t[1].text
+                data.append([name, t[2].text, t[3].text, t[4].text, t[5].text, t[6].text])
 
-            labels = ('Предмет', ' 1 ', ' 2 ', ' 3 ', ' 4 ', 'Итог')
+                base_model.FinalMarks.create(chat_id=self.chat_id,
+                                             subject=name,
+                                             quarter_1=t[2].text,
+                                             quarter_2=t[3].text,
+                                             quarter_3=t[4].text,
+                                             quarter_4=t[5].text,
+                                             final_mark=t[6].text)
 
-            if data:
-                ImageConstructor.creation_image(data, labels, self.theme, self.chat_id, 'parse_final_marks.png')
-            else:
-                if os.path.exists(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_final_marks.png'):
-                    os.remove(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_final_marks.png')
+        labels = ('Предмет', ' 1 ', ' 2 ', ' 3 ', ' 4 ', 'Итог')
 
-        except Exception as e:
-            print(e)
+        if data:
+            ImageConstructor.creation_image(data, labels, self.theme, self.chat_id, 'parse_final_marks.png')
+        else:
+            if os.path.exists(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_final_marks.png'):
+                os.remove(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_final_marks.png')
 
         logging.info(f'Successes save final_marks for user {self.chat_id}')
 
@@ -396,6 +355,7 @@ class Parse:
         :return:
         """
         # Path to table marks
+
         driver.find_element_by_xpath('/html/body/div[1]/div[4]/nav/ul/li[3]/a').click()
         driver.find_element_by_xpath(
             '/html/body/div[2]/div[1]/div/div/div/div[2]/div/table/tbody/tr[3]/td[2]/a').click()
@@ -441,34 +401,45 @@ class Parse:
         :return:
         """
 
-        # Path to certain period
-        driver.find_element_by_xpath('/html/body/div[1]/div[4]/nav/ul/li[3]/a').click()
-        driver.find_element_by_xpath(
-            '/html/body/div[2]/div[1]/div/div/div/div[2]/div/table/tbody/tr[10]/td[2]/a').click()
+        try:
+            # Path to certain period
+            driver.find_element_by_xpath('/html/body/div[1]/div[4]/nav/ul/li[3]/a').click()
+            driver.find_element_by_xpath(
+                '/html/body/div[2]/div[1]/div/div/div/div[2]/div/table/tbody/tr[10]/td[2]/a').click()
+        except Exception as e:
+            logging.error(e)
 
         # Очистка базы от старых записей
         model = base_model.MiddleMarksPeriod.delete().where(base_model.MiddleMarksPeriod.chat_id == self.chat_id)
         model.execute()
 
         for period in range(1, 5):
-            if period != 0:
-                driver.find_element_by_xpath(
-                    '/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select').click()
-                if period == 1:
-                    driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
-                                                 '1]/form/div/div/div/div[3]/div/select/option[1]').click()
-                elif period == 2:
-                    driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
-                                                 '1]/form/div/div/div/div[3]/div/select/option[2]').click()
-                elif period == 3:
-                    driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
-                                                 '1]/form/div/div/div/div[3]/div/select/option[3]').click()
-                elif period == 4:
-                    driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
-                                                 '1]/form/div/div/div/div[3]/div/select/option[4]').click()
-            driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[3]'
-                                         '/div/div/div[1]/button[1]/span[2]').click()
-            time.sleep(3)
+            # driver.find_element_by_xpath(
+            #     '/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select').click()
+            if period == 1:
+                Select(driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(0)
+                # driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
+                #                              '1]/form/div/div/div/div[3]/div/select/option[1]').click()
+            elif period == 2:
+                Select(driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(1)
+
+                # driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
+                #                              '1]/form/div/div/div/div[3]/div/select/option[2]').click()
+            elif period == 3:
+                Select(driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(2)
+
+                # driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
+                #                              '1]/form/div/div/div/div[3]/div/select/option[3]').click()
+            elif period == 4:
+                Select(driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(3)
+
+                # driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
+                #                              '1]/form/div/div/div/div[3]/div/select/option[4]').click()
+            time.sleep(0.5)
+
+            driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[3]/div/div/div[1]/button[1]').click()
+
+            time.sleep(1)
             html = driver.page_source
 
             # Find elements of table
@@ -562,7 +533,9 @@ if __name__ == "__main__":
     user = Parse(chat_id=12324, place='Городской округ Сыктывкар', town='Сыктывкар, г.',
                  type_school='Общеобразовательная',
                  school='МАОУ "Технологический лицей"',
-                 login='СухановА2', password='290483', theme='theme_1')
+                 login='СухановА2',
+                 password='gAAAAABg4xihX5qenJQewYVg7YyDf4GhPf0mAjj4iWJib49quBYItFSNObW8y'
+                          'NrSUUkRM1EFS3KjqkjvP9MN66Wb3y3CmzglBA==', theme='theme_1')
     logging.shutdown()
     now = datetime.datetime.now()
     duration = now - then
