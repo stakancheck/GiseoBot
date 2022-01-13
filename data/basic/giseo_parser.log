@@ -1,0 +1,12 @@
+2022-01-06 22:39:36,117: INFO -> Bot: Ёлектронный дневник [@giseo_bot]
+2022-01-06 22:39:36,117: INFO -> Start polling.
+2022-01-06 22:40:47,259: INFO -> Create user 1050426218
+2022-01-06 22:40:47,260: INFO -> User 1050426218 already added to DB
+2022-01-06 22:40:47,260: INFO -> Start get page
+2022-01-06 22:40:52,025: INFO -> Complete get page
+2022-01-06 22:40:53,178: INFO -> Successful login, user: 1050426218
+2022-01-06 22:41:03,232: ERROR -> Skip warning error!
+2022-01-06 22:41:06,453: INFO -> Successes save final_marks for user 1050426218
+2022-01-06 22:41:08,770: INFO -> Successes save middle_marks_year for user 1050426218
+2022-01-06 22:43:21,084: INFO -> Stop polling...
+2022-01-06 22:43:21,085: WARNING -> Goodbye!

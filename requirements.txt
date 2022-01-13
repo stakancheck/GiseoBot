@@ -1,0 +1,11 @@
+aiogram==2.13
+numpy==1.20.3
+pandas==1.2.4
+beautifulsoup4==4.9.3
+selenium==3.141.0
+matplotlib==3.4.2
+python-decouple==3.4
+html5lib==1.1
+cryptography~=3.4.7
+peewee~=3.14.4
+Pillow~=8.2.0
