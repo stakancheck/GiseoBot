@@ -244,7 +244,7 @@ async def changing_theme(call, theme):
     mes1 = await call.message.answer('📥 Обновление информации 📥\n')
     res = DbTools.change_theme(call.message.chat.id, theme)
     if res == 'error':
-        mes2 = await call.message.answer('❌ Ошибка при входе ❌\nпопробуйте позже...')
+        mes2 = await call.message.answer('❌ Ошибка при смене темы ❌\nпопробуйте позже...')
     else:
         print('ok')
         mes2 = await call.message.answer('✔ Обновление завершено! ✔')

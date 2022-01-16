@@ -226,32 +226,27 @@ def update_images(chat_id, theme):
     # get schedule
     schedule = Schedule.select().where(Schedule.chat_id == chat_id)
     data_schedule = {
-        '0': [[], []],
-        '1': [[], []],
-        '2': [[], []],
-        '3': [[], []],
-        '4': [[], []],
-        '5': [[], []],
-        '6': [[], []],
+        '0': [],
+        '1': [],
+        '2': [],
+        '3': [],
+        '4': [],
+        '5': [],
+        '6': [],
     }
 
     for item in schedule:
         # schedule
-        mass = data_schedule[str(item.day)][0]
+        mass = data_schedule[str(item.day)]
         mass.append([item.time, item.subject])
-        data_schedule[str(item.day)][0] = mass
+        data_schedule[str(item.day)] = mass
 
-        # homework
-        if len(item.homework) > 2:
-            mass_hw = data_schedule[str(item.day)][1]
-            mass_hw.append([item.subject, item.homework])
-            data_schedule[str(item.day)][1] = mass_hw
     # print(schedule)
 
     # get final marks
     final_marks = FinalMarks.select().where(FinalMarks.chat_id == chat_id)
     final_marks = [[item.subject, item.quarter_1, item.quarter_2,
-                    item.quarter_3, item.quarter_4, item.final] for item in final_marks]
+                    item.quarter_3, item.quarter_4, item.final_mark] for item in final_marks]
     # print(final_marks)
 
     # get middle marks year
@@ -266,10 +261,8 @@ def update_images(chat_id, theme):
 
     # create images
     for key in data_schedule.keys():
-        if data_schedule[key][0]: creation_image(data_schedule[key][0], ('Время', 'Урок'), theme, chat_id,
-                                                 f'parse_schedule_{key}.png')
-        if data_schedule[key][1]: creation_image(data_schedule[key][1], ('Урок', 'Домашнее задание'), theme, chat_id,
-                                                 f'parse_homework_{key}.png', is_homework=True)
+        if data_schedule[key]: creation_image(data_schedule[key], ('Время', 'Урок'), theme, chat_id,
+                                              f'parse_schedule_{key}.png')
     if final_marks: creation_image(final_marks, ('Предмет', ' 1 ', ' 2 ', ' 3 ', ' 4 ', 'Итог'),
                                    theme, chat_id, 'parse_final_marks.png')
     if middle_marks_year: creation_image(middle_marks_year, ('Предмет', 'Балл'), theme, chat_id,
