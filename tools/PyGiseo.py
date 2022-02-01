@@ -328,14 +328,21 @@ class Parse:
                     name = t[1].text[:29] + '...'
                 else:
                     name = t[1].text
-                data.append([name, t[2].text, t[3].text, t[4].text, t[5].text, t[6].text])
+
+                for z in range(2, 6):
+                    if t[z].text == u'\xa0':
+                        t[z] = 0
+                    else:
+                        t[z] = int(t[z].text)
+
+                data.append([name, t[2], t[3], t[4], t[5], t[6].text])
 
                 base_model.FinalMarks.create(chat_id=self.chat_id,
                                              subject=name,
-                                             quarter_1=t[2].text,
-                                             quarter_2=t[3].text,
-                                             quarter_3=t[4].text,
-                                             quarter_4=t[5].text,
+                                             quarter_1=t[2],
+                                             quarter_2=t[3],
+                                             quarter_3=t[4],
+                                             quarter_4=t[5],
                                              final_mark=t[6].text)
 
         labels = ('Предмет', ' 1 ', ' 2 ', ' 3 ', ' 4 ', 'Итог')

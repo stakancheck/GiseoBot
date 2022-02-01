@@ -6,7 +6,7 @@ from aiogram import types
 from .PyGiseo import Parse
 from .base_model import *
 from decouple import config
-from .ImageConstructor import creation_image
+from .ImageConstructor import creation_image, plot_image
 
 project_path = config('PATH_P')
 params = ["chat_id", "login", "password", "place", "town", "type_school", "school", "theme"]
@@ -220,6 +220,42 @@ def get_homework_text(chat_id, day):
             text += f'<b>{item.subject}:</b>\n{item.homework}\n\n'
 
     return text
+
+
+def plot_constructor(chat_id, theme):
+    final_marks = FinalMarks.select().where(FinalMarks.chat_id == chat_id)
+    quarter_1 = 0
+    quarter_2 = 0
+    quarter_3 = 0
+    quarter_4 = 0
+
+    quarter_1_div = 0
+    quarter_2_div = 0
+    quarter_3_div = 0
+    quarter_4_div = 0
+
+    for item in final_marks:
+        if item.quarter_1:
+            quarter_1_div += 1
+            quarter_1 += item.quarter_1
+        if item.quarter_2:
+            quarter_2_div += 1
+            quarter_2 += item.quarter_2
+        if item.quarter_3:
+            quarter_3_div += 1
+            quarter_3 += item.quarter_3
+        if item.quarter_4:
+            quarter_4_div += 1
+            quarter_4 += item.quarter_4
+
+    data_marks = []
+
+    data_marks.append(quarter_1/quarter_1_div) if quarter_1_div else data_marks.append(0)
+    data_marks.append(quarter_2/quarter_2_div) if quarter_2_div else data_marks.append(0)
+    data_marks.append(quarter_3/quarter_3_div) if quarter_3_div else data_marks.append(0)
+    data_marks.append(quarter_4/quarter_4_div) if quarter_4_div else data_marks.append(0)
+
+    plot_image(data_marks, theme, chat_id, 'plot_marks.png')
 
 
 def update_images(chat_id, theme):

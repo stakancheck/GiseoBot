@@ -12,6 +12,16 @@ matplotlib.use('Agg')
 project_path = config('PATH_P')
 
 
+def plot_image(data, theme, chat_id, file):
+
+    x = [1, 2, 3, 4]
+    y = data
+
+    plt.plot(x, y, 'o-r', alpha=0.7, label="first", lw=5, mec='b', mew=2, ms=10)
+    plt.grid(True)
+    plt.savefig(f'{project_path}\\data\\assets\\user_{chat_id}\\{file}')
+
+
 def creation_image(data, labels, theme, chat_id, file, is_homework=False):
     # Style images
     if theme == 'theme_1':
