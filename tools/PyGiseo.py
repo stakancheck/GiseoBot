@@ -317,12 +317,15 @@ class Parse:
         table = soup.find('table', class_='hidden-mobile')
         rows = table.find_all('tr', class_='ng-scope')
 
+        model = base_model.Duty.delete().where(base_model.Duty.chat_id == self.chat_id)
+        model.execute()
+
         for item in rows:
             subject = item.find('td', class_='subject_data').find('a').text
             task = item.find('td', class_='theme_data').find('a').text
-            date = item.find('td', class_='date_data').find('a').text
-            # print(f'{subject} - {task} - {date}')
-            d = base_model.Duty.create(chat_id=self.chat_id, subject=subject, task=task, date=date)
+            date_t = item.find('td', class_='date_data').find('a').text
+            # print(f'{subject} - {task} - {date_t} {type(date_t)}')
+            d = base_model.Duty.create(chat_id=self.chat_id, subject=subject, task=task, date=date_t)
             d.save()
 
         logging.info(f'Successes save duty for user {self.chat_id}')
