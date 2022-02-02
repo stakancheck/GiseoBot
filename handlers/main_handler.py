@@ -33,53 +33,60 @@ async def functions(call: types.CallbackQuery):
     if call.data == 'back':
         await main_menu(call)
 
-    if call.data == 'homework_t':
-        day = datetime.datetime.today().weekday() + 1
-        next_day = datetime.date.today() + datetime.timedelta(days=1)
-        next_day = next_day.strftime('%d.%m.%y')
-        if day == 7: day = 1
-        homework = DbTools.get_homework_text(call.message.chat.id, day)
-        if homework:
-            await DbTools.send_photo(call, f'homework.png')
-            await call.message.edit_caption(f'Ваше домашнее задние на <b>{name_of_day(day)}, {next_day}</b>\n\n'
-                                            f'{homework}',
-                                            reply_markup=homework_back_t_keyboard, parse_mode='html')
-        else:
-            await call.answer('Информации нет на сайте!')
+    if 'schedule: ' in call.data:
+        selected_day = call.data[10:]
 
-    if call.data == 'homework_n':
-        day = datetime.datetime.today().weekday()
-        today = datetime.date.today()
-        today = today.strftime('%d.%m.%y')
+        date = datetime.datetime.strptime(selected_day, '%d.%m.%Y')
+        day = date.weekday()
+
+        if day == 6:
+            day = 0
+            date = date + datetime.timedelta(days=1)
+
+        previous_day = (date - datetime.timedelta(days=1)).strftime('%d.%m.%Y')
+        next_day = (date + datetime.timedelta(days=1)).strftime('%d.%m.%Y')
+        # print(f"{selected_day} - y: {previous_day} t: {next_day}")
+
+        keyboard_schedule = types.InlineKeyboardMarkup()
+
+        if day == 5:
+            keyboard_schedule.row(types.InlineKeyboardButton('⬅️', callback_data=f'schedule: {previous_day}'),
+                                  types.InlineKeyboardButton('📚', callback_data=f'homework: {selected_day}'))
+            keyboard_schedule.row(types.InlineKeyboardButton('🏠', callback_data='back'))
+
+        elif day == 0:
+            keyboard_schedule.row(types.InlineKeyboardButton('📚', callback_data=f'homework: {selected_day}'),
+                                  types.InlineKeyboardButton('➡️', callback_data=f'schedule: {next_day}'))
+            keyboard_schedule.row(types.InlineKeyboardButton('🏠', callback_data='back'))
+
+        else:
+            keyboard_schedule.row(types.InlineKeyboardButton('⬅️', callback_data=f'schedule: {previous_day}'),
+                                  types.InlineKeyboardButton('📚', callback_data=f'homework: {selected_day}'),
+                                  types.InlineKeyboardButton('➡️', callback_data=f'schedule: {next_day}'))
+            keyboard_schedule.row(types.InlineKeyboardButton('🏠', callback_data='back'))
+
+        if await DbTools.send_photo(call, f'parse_schedule_{day}.png'):
+            await call.message.edit_caption(f'Ваше расписание на <b>{name_of_day(day)}, {selected_day}'
+                                            f'</b>', reply_markup=keyboard_schedule, parse_mode='html')
+
+    if 'homework: ' in call.data:
+        selected_day = call.data[10:]
+        date = datetime.datetime.strptime(selected_day, '%d.%m.%Y')
+        day = date.weekday()
         if day == 6: day = 0
         homework = DbTools.get_homework_text(call.message.chat.id, day)
         duty = DbTools.get_duty_text(call.message.chat.id)
+
+        homework_keyboard = types.InlineKeyboardMarkup()
+        homework_keyboard.row(types.InlineKeyboardButton('🔙', callback_data=f'schedule: {selected_day}'))
+
         if homework:
             await DbTools.send_photo(call, f'homework.png')
-            await call.message.edit_caption(f'Ваше домашнее задание на <b>{name_of_day(day)}, {today}</b>\n\n'
+            await call.message.edit_caption(f'Ваше домашнее задание на <b>{name_of_day(day)}, {selected_day}</b>\n\n'
                                             f'{homework}\n<b>Ваши просроченные задания:</b>\n\n{duty}',
-                                            reply_markup=homework_back_n_keyboard, parse_mode='html')
+                                            reply_markup=homework_keyboard, parse_mode='html')
         else:
             await call.answer('Информации нет на сайте!')
-
-    if call.data == 'next':
-        day = datetime.datetime.today().weekday() + 1
-        next_day = datetime.date.today() + datetime.timedelta(days=1)
-        next_day = next_day.strftime('%d.%m.%y')
-        if day == 7: day = 1
-        if await DbTools.send_photo(call, f'parse_schedule_{day}.png'):
-            await call.message.edit_caption(f'Ваше расписание на <b>{name_of_day(day)}, '
-                                            f'{next_day}</b>',
-                                            reply_markup=today_keyboard, parse_mode='html')
-
-    if call.data == 'schedule':
-        day = datetime.datetime.today().weekday()
-        today = datetime.date.today()
-        today = today.strftime('%d.%m.%y')
-        if day == 6: day = 0
-        if await DbTools.send_photo(call, f'parse_schedule_{day}.png'):
-            await call.message.edit_caption(f'Ваше расписание на <b>{name_of_day(day)}, {today}'
-                                            f'</b>', reply_markup=next_keyboard, parse_mode='html')
 
     if call.data == 'year':
         if await DbTools.send_photo(call, 'parse_middle_marks_year.png'):
