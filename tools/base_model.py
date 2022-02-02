@@ -66,9 +66,20 @@ class Schedule(Model):
         database = database
 
 
+class Duty(Model):
+    chat_id = ForeignKeyField(User)
+    subject = TextField()
+    task = TextField()
+    date = TextField()
+
+    class Meta:
+        database = database
+
+
 if __name__ == '__main__':
     FinalMarks.create_table()
     MiddleMarksPeriod.create_table()
     MiddleMarksYear.create_table()
     Schedule.create_table()
+    Duty.create_table()
     print('Completed')

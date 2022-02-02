@@ -53,10 +53,11 @@ async def functions(call: types.CallbackQuery):
         today = today.strftime('%d.%m.%y')
         if day == 6: day = 0
         homework = DbTools.get_homework_text(call.message.chat.id, day)
+        duty = DbTools.get_duty_text(call.message.chat.id)
         if homework:
             await DbTools.send_photo(call, f'homework.png')
             await call.message.edit_caption(f'Ваше домашнее задание на <b>{name_of_day(day)}, {today}</b>\n\n'
-                                            f'{homework}',
+                                            f'{homework}\n<b>Ваши просроченные задания:</b>\n\n{duty}',
                                             reply_markup=homework_back_n_keyboard, parse_mode='html')
         else:
             await call.answer('Информации нет на сайте!')

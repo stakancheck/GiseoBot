@@ -10,7 +10,6 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import Select
 from tools import DbTools, base_model, ImageConstructor
 
-
 cipher_key = config('CIPHER_KEY')
 project_path = config('PATH_P')
 
@@ -59,7 +58,10 @@ class Parse:
             self.progress = 5
             logging.info(f'User {self.chat_id} already added to DB')
 
-        self.start_parse()
+        try:
+            self.start_parse()
+        except Exception as e:
+            logging.error(e)
 
     def login_user(self):
         base_model.User.create_table()
@@ -166,16 +168,17 @@ class Parse:
         except:
             logging.error(f'Skip warning error!')
 
-
         try:
             time.sleep(self.TIME_SLEEP)
-            self.parse_final(driver)
-            time.sleep(self.TIME_SLEEP)
-            self.parse_middle_marks_year(driver)
-            time.sleep(self.TIME_SLEEP)
-            self.parse_middle_marks_period(driver)
-            time.sleep(self.TIME_SLEEP)
+            # self.parse_final(driver)
+            # time.sleep(self.TIME_SLEEP)
+            # self.parse_middle_marks_year(driver)
+            # time.sleep(self.TIME_SLEEP)
+            # self.parse_middle_marks_period(driver)
+            # time.sleep(self.TIME_SLEEP)
             self.parse_schedule(driver)
+            time.sleep(self.TIME_SLEEP)
+            self.parse_duty(driver)
             self.quit_giseo(driver)
         except Exception as e:
             logging.error(e)
@@ -290,6 +293,38 @@ class Parse:
                 ImageConstructor.creation_image(text[str(key)], labels, self.theme, self.chat_id,
                                                 f'parse_schedule_{key}.png')
                 logging.info(f'Successes save schedule {key} for user {self.chat_id}')
+
+    def parse_duty(self, driver):
+        """
+        Parsing Duty from schedule window
+        :param driver: driver selenium
+        :return:
+        """
+
+        logging.info(f'Start parse duty for user {self.chat_id}')
+
+        driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div/'
+                                     'div[2]/div/div/div[2]/div[1]/div[2]/div[3]/i').click()
+        try:
+            driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div/div[2]'
+                                         '/div/div/div[1]/past-mandatory/div/div[1]/i[1]').click()
+        except Exception as e:
+            logging.error(e)
+
+        html = driver.page_source
+        soup = BeautifulSoup(html, 'html5lib')
+        table = soup.find('table', class_='hidden-mobile')
+        rows = table.find_all('tr', class_='ng-scope')
+
+        for item in rows:
+            subject = item.find('td', class_='subject_data').find('a').text
+            task = item.find('td', class_='theme_data').find('a').text
+            date = item.find('td', class_='date_data').find('a').text
+            # print(f'{subject} - {task} - {date}')
+            d = base_model.Duty.create(chat_id=self.chat_id, subject=subject, task=task, date=date)
+            d.save()
+
+        logging.info(f'Successes save duty for user {self.chat_id}')
 
     def parse_final(self, driver):
         """
@@ -424,21 +459,29 @@ class Parse:
             # driver.find_element_by_xpath(
             #     '/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select').click()
             if period == 1:
-                Select(driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(0)
+                Select(driver.find_element_by_xpath(
+                    '/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(
+                    0)
                 # driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
                 #                              '1]/form/div/div/div/div[3]/div/select/option[1]').click()
             elif period == 2:
-                Select(driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(1)
+                Select(driver.find_element_by_xpath(
+                    '/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(
+                    1)
 
                 # driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
                 #                              '1]/form/div/div/div/div[3]/div/select/option[2]').click()
             elif period == 3:
-                Select(driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(2)
+                Select(driver.find_element_by_xpath(
+                    '/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(
+                    2)
 
                 # driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
                 #                              '1]/form/div/div/div/div[3]/div/select/option[3]').click()
             elif period == 4:
-                Select(driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(3)
+                Select(driver.find_element_by_xpath(
+                    '/html/body/div[2]/div[1]/div/div/div/div[2]/div[1]/form/div/div/div/div[3]/div/select')).select_by_index(
+                    3)
 
                 # driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div['
                 #                              '1]/form/div/div/div/div[3]/div/select/option[4]').click()

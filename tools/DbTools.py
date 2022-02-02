@@ -218,7 +218,14 @@ def get_homework_text(chat_id, day):
     for item in schedule:
         if len(item.homework) > 3 and item.day == day:
             text += f'<b>{item.subject}:</b>\n{item.homework}\n\n'
+    return text
 
+
+def get_duty_text(chat_id):
+    duty = Duty.select().where(Duty.chat_id == chat_id)
+    text = ''
+    for item in duty:
+        text += f'<b>{item.subject}:\n<i>{item.date}</i></b> - {item.task}\n'
     return text
 
 
@@ -283,6 +290,10 @@ def update_images(chat_id, theme):
     final_marks = FinalMarks.select().where(FinalMarks.chat_id == chat_id)
     final_marks = [[item.subject, item.quarter_1, item.quarter_2,
                     item.quarter_3, item.quarter_4, item.final_mark] for item in final_marks]
+    for i in range(len(final_marks)):
+        for b in range(1, 4):
+            if final_marks[i][b] == 0:
+                final_marks[i][b] = ''
     # print(final_marks)
 
     # get middle marks year
