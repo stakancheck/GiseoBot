@@ -124,7 +124,7 @@ def update_data(chat_id: int):
     try:
         Parse(*user_data)
     except Exception as e:
-        user_data = f'error: {e}'
+        user_data = 'error'
     return user_data
 
 

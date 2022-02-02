@@ -51,6 +51,7 @@ class Parse:
         # Parameters for execute
         self.TIME_SLEEP = 0.6
         self.DEBUG = False
+        self.RESPONSE = 'OK'
 
         if not DbTools.check_user_exists(self.chat_id):
             self.login_user()
@@ -166,7 +167,7 @@ class Parse:
             driver.find_element_by_xpath(
                 '/html/body/div[1]/div/div/div/div/div[4]/div/div/div/div/button[2]/span[2]').click()
         except:
-            logging.error(f'Skip warning error!')
+            logging.info(f'Skip warning error!')
 
         try:
             time.sleep(self.TIME_SLEEP)
