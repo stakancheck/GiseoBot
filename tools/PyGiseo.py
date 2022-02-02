@@ -171,12 +171,12 @@ class Parse:
 
         try:
             time.sleep(self.TIME_SLEEP)
-            # self.parse_final(driver)
-            # time.sleep(self.TIME_SLEEP)
-            # self.parse_middle_marks_year(driver)
-            # time.sleep(self.TIME_SLEEP)
-            # self.parse_middle_marks_period(driver)
-            # time.sleep(self.TIME_SLEEP)
+            self.parse_final(driver)
+            time.sleep(self.TIME_SLEEP)
+            self.parse_middle_marks_year(driver)
+            time.sleep(self.TIME_SLEEP)
+            self.parse_middle_marks_period(driver)
+            time.sleep(self.TIME_SLEEP)
             self.parse_schedule(driver)
             time.sleep(self.TIME_SLEEP)
             self.parse_duty(driver)

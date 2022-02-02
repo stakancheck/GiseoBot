@@ -22,7 +22,7 @@ def plot_image(data, theme, chat_id, file):
     plt.savefig(f'{project_path}\\data\\assets\\user_{chat_id}\\{file}')
 
 
-def creation_image(data, labels, theme, chat_id, file, is_homework=False):
+def creation_image(data, labels, theme, chat_id, file):
     # Style images
     if theme == 'theme_1':
         facecolor = '#F5F0E1'
@@ -49,7 +49,7 @@ def creation_image(data, labels, theme, chat_id, file, is_homework=False):
     table = plt.table(cellText=df.values, loc='center', rowLoc='left', cellLoc='left', colLabels=labels)
     # plt.rcParams["font.family"] = "monospace"
     table.set_fontsize(10)
-    table.scale(0.2, 2.4) if is_homework else table.scale(1, 1.5)
+    table.scale(1, 1.5)
     table.auto_set_column_width(col=list(range(len(df.columns))))
     for item in table.get_celld():
         is_homework: table.get_celld()[item[0], 1].set_text_props(horizontalalignment='left')
@@ -63,5 +63,6 @@ def creation_image(data, labels, theme, chat_id, file, is_homework=False):
     # Save table as image in "assets" folder
     plt.savefig(f'{project_path}\\data\\assets\\user_{chat_id}\\{file}', bbox_inches='tight',
                 facecolor=facecolor, dpi=150)
+    # , pad_inches = 0.1
     plt.close()
 
