@@ -45,8 +45,8 @@ class Parse:
         """
 
         # Create folder special for user
-        # if not os.path.exists(f'{project_path}\\data\\assets\\user_{chat_id}'):
-        #     os.makedirs(f'{project_path}\\data\\assets\\user_{chat_id}')
+        # if not os.path.exists(f'{project_path}/data/assets/user_{chat_id}'):
+        #     os.makedirs(f'{project_path}/data/assets/user_{chat_id}')
 
         # User information
         self.chat_id = chat_id
@@ -68,8 +68,8 @@ class Parse:
 
     def start_parse(self):
         settings = webdriver.ChromeOptions()
-        # settings.binary_location = f'{project_path}\\tool_4\\GoogleChromePortable.exe'
-        driver = webdriver.Chrome(executable_path=f'{project_path}\\tool_driver\\chromedriver.exe')
+        # settings.binary_location = f'{project_path}/tool_4/GoogleChromePortable.exe'
+        driver = webdriver.Chrome(executable_path=f'{project_path}/tool_driver/chromedriver.exe')
         driver.implicitly_wait(10)
         driver.maximize_window()
         driver.get("https://giseo.rkomi.ru/about.html")
