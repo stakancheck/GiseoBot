@@ -20,7 +20,7 @@ async def spaming(message: types.Message, text):
     :return:
     """
     user_data = User.select()
-    # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
+    # with sql.connect(f'{project_path}\\data\\basic\\data.db') as conn:
     #     cur = conn.cursor()
     #     cur.execute("SELECT * FROM users")
     #     user_data = cur.fetchall()
@@ -42,8 +42,8 @@ async def send_photo(call: types.CallbackQuery, file: str, mode=1, caption=None,
     :return:
     """
     if file[:5] == 'parse':
-        if os.path.exists(f'{project_path}/data/assets/user_{call.message.chat.id}/{file}'):
-            path_image = f'{project_path}/data/assets/user_{call.message.chat.id}/{file}'
+        if os.path.exists(f'{project_path}\\data\\assets\\user_{call.message.chat.id}\\{file}'):
+            path_image = f'{project_path}\\data\\assets\\user_{call.message.chat.id}\\{file}'
             await call.message.edit_media(types.InputMediaPhoto(types.InputFile(path_image)))
             return True
         else:
@@ -56,16 +56,16 @@ async def send_photo(call: types.CallbackQuery, file: str, mode=1, caption=None,
 
     else:
         if file == 'theme_change_variants.png':
-            path_image = f'{project_path}/data/assets/{file}'
+            path_image = f'{project_path}\\data\\assets\\{file}'
         else:
             user_data = User.select().where(User.chat_id == call.message.chat.id).get()
-            # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
+            # with sql.connect(f'{project_path}\\data\\basic\\data.db') as conn:
             #     cur = conn.cursor()
             #     cur.execute("SELECT * FROM users WHERE chat_id=?",
             #                 (call.message.chat.id,))
             #     user_data = cur.fetchone()
             #     cur.close()
-            path_image = f'{project_path}/data/assets/{user_data.theme}/{file}'  # user theme
+            path_image = f'{project_path}\\data\\assets\\{user_data.theme}\\{file}'  # user theme
 
         if mode == 1:
             await call.message.edit_media(types.InputMediaPhoto(types.InputFile(path_image)))
@@ -82,7 +82,7 @@ def change_theme(chat_id: int, theme: str):
     """
     data = User.select().where(User.chat_id == chat_id).get()
 
-    # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
+    # with sql.connect(f'{project_path}\\data\\basic\\data.db') as conn:
     #     cur = conn.cursor()
     #     cur.execute("SELECT * FROM users WHERE chat_id=?", (chat_id,))
     #     user_data = tuple(cur.fetchone())
@@ -104,7 +104,7 @@ def update_data(chat_id: int):
     :param chat_id: message.chat.id
     :return: list(chat_id, login, password, place, town, type_school, school, theme, date_update)
     """
-    # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
+    # with sql.connect(f'{project_path}\\data\\basic\\data.db') as conn:
     #     cur = conn.cursor()
     #     cur.execute("SELECT * FROM users WHERE chat_id=?", (chat_id,))
     #     user_data = tuple(cur.fetchone())
@@ -138,7 +138,7 @@ def logout_user(chat_id: int):
     user_data.delete_instance()
     user_data.save()
     #
-    # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
+    # with sql.connect(f'{project_path}\\data\\basic\\data.db') as conn:
     #     cur = conn.cursor()
     #     cur.execute("DELETE FROM users WHERE chat_id=?", (chat_id,))
     #     conn.commit()
@@ -163,7 +163,7 @@ def get_user_data(chat_id: int):
     data = User.select().where(User.chat_id == chat_id).get()
     user_data = (data.chat_id, data.login, data.password, data.place,
                  data.town, data.type_school, data.school, data.theme)
-    # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
+    # with sql.connect(f'{project_path}\\data\\basic\\data.db') as conn:
     #     cur = conn.cursor()
     #     cur.execute("SELECT * FROM users WHERE chat_id=?", (chat_id,))
     #     user_data = cur.fetchone()
@@ -181,7 +181,7 @@ def delete_user(chat_id: int):
     user_data.delete_instance()
     user_data.save()
 
-    # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
+    # with sql.connect(f'{project_path}\\data\\basic\\data.db') as conn:
     #     cur = conn.cursor()
     #     cur.execute("SELECT * FROM users WHERE chat_id=?", (chat_id,))
     #     user_data = tuple(cur.fetchone())
@@ -206,9 +206,9 @@ def get_photo(chat_id: int, file_name: str, mode=1):
     """
     if mode == 1:
         photo = open(
-            f'{project_path}/data/assets/user_{chat_id}/parse_{file_name}.png', 'rb')
+            f'{project_path}\\data\\assets\\user_{chat_id}\\parse_{file_name}.png', 'rb')
     else:
-        photo = open(f'{project_path}/data/assets/{file_name}.png', 'rb')
+        photo = open(f'{project_path}\\data\\assets\\{file_name}.png', 'rb')
     return photo
 
 

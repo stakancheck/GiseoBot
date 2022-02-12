@@ -5,7 +5,7 @@ from decouple import config
 path = config('PATH_P')
 
 # connect base
-database = SqliteDatabase(f'{path}/data/basic/data.db')
+database = SqliteDatabase(f'{path}\\data\\basic\\data.db')
 
 
 class User(Model):
@@ -81,6 +81,5 @@ if __name__ == '__main__':
     MiddleMarksPeriod.create_table()
     MiddleMarksYear.create_table()
     Schedule.create_table()
-    User.create_table()
     Duty.create_table()
     print('Completed')

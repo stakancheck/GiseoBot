@@ -25,7 +25,7 @@ async def admin_menu(call: types.CallbackQuery):
         await call.message.answer('Ввведите текст, напишите "отмена", если передумали.')
         await Menu.spam.set()
     if call.data == 'db':
-        await bot.send_document(call.message.chat.id, types.InputFile(f"{project_path}/data/basic/data.db"))
+        await bot.send_document(call.message.chat.id, types.InputFile(f"{project_path}\\data\\basic\\data.db"))
     if call.data == 'off':
         await call.message.edit_text('Хозяин, ты уверен???', reply_markup=logout_confirm_keyboard)
         await Menu.off_confirm.set()

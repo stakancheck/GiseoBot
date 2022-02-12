@@ -13,7 +13,7 @@ cipher_key = config('CIPHER_KEY')
 
 async def start_login(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    with open(f'{project_path}/data/basic/data_registration_giseo.json', 'r') as f:
+    with open(f'{project_path}\\data\\basic\\data_registration_giseo.json', 'r') as f:
         DATA = json.load(f)
     for item in DATA.keys():
         keyboard.row(types.KeyboardButton(item))
@@ -25,7 +25,7 @@ async def start_login(message: types.Message):
 async def second(message: types.Message, state: FSMContext):
     answer = message.text
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    with open(f'{project_path}/data/basic/data_registration_giseo.json', 'r') as f:
+    with open(f'{project_path}\\data\\basic\\data_registration_giseo.json', 'r') as f:
         DATA = json.load(f)
     for item in DATA[answer].keys():
         keyboard.row(types.KeyboardButton(item))
@@ -41,7 +41,7 @@ async def second(message: types.Message, state: FSMContext):
 async def third(message: types.Message, state: FSMContext):
     answer = message.text
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    with open(f'{project_path}/data/basic/data_registration_giseo.json', 'r') as f:
+    with open(f'{project_path}\\data\\basic\\data_registration_giseo.json', 'r') as f:
         DATA = json.load(f)
     state_data = await state.get_data()
     for item in DATA[state_data['place']][answer].keys():
@@ -57,7 +57,7 @@ async def third(message: types.Message, state: FSMContext):
 async def fourth(message: types.Message, state: FSMContext):
     answer = message.text
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    with open(f'{project_path}/data/basic/data_registration_giseo.json', 'r') as f:
+    with open(f'{project_path}\\data\\basic\\data_registration_giseo.json', 'r') as f:
         DATA = json.load(f)
     state_data = await state.get_data()
     for item in DATA[state_data['place']][state_data['town']][answer]:
@@ -97,7 +97,7 @@ async def confirm(message: types.Message, state: FSMContext):
     await state.update_data({
         'password': password
     })
-    path_file = f'{project_path}/data/basic/Согласие на обработку персональных данных.pdf'
+    path_file = f'{project_path}\\data\\basic\\Согласие на обработку персональных данных.pdf'
     await message.answer_document(types.InputFile(path_file), caption='Согласие на обработку персональных данных',
                                   reply_markup=confirm_keyboard)
     # await message.answer('Согласие на обработку персональных данных', reply_markup=confirm_keyboard)

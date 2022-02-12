@@ -13,7 +13,7 @@ from tools import DbTools, base_model, ImageConstructor
 cipher_key = config('CIPHER_KEY')
 project_path = config('PATH_P')
 
-logging.basicConfig(filename=f'{project_path}/data/basic/giseo_parser.log', level=logging.INFO, filemode='w',
+logging.basicConfig(filename=f'{project_path}\\data\\basic\\giseo_parser.log', level=logging.INFO, filemode='w',
                     format='%(asctime)s: %(levelname)s -> %(message)s')
 
 
@@ -33,8 +33,8 @@ class Parse:
         logging.info(f'Create user {chat_id}')
 
         # Create folder special for user
-        if not os.path.exists(f'{project_path}/data/assets/user_{chat_id}'):
-            os.makedirs(f'{project_path}/data/assets/user_{chat_id}')
+        if not os.path.exists(f'{project_path}\\data\\assets\\user_{chat_id}'):
+            os.makedirs(f'{project_path}\\data\\assets\\user_{chat_id}')
 
         # User information
         self.chat_id = chat_id
@@ -50,7 +50,7 @@ class Parse:
 
         # Parameters for execute
         self.TIME_SLEEP = 0.6
-        self.DEBUG = True
+        self.DEBUG = False
         self.RESPONSE = 'OK'
 
         if not DbTools.check_user_exists(self.chat_id):
@@ -72,7 +72,7 @@ class Parse:
         new_user.save()
         # data = (self.chat_id, self.login, self.password, self.place,
         #         self.town, self.type_school, self.school, self.theme, self.date_update)
-        # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
+        # with sql.connect(f'{project_path}\\data\\basic\\data.db') as conn:
         #     cur = conn.cursor()
         #     cur.execute(
         #         "CREATE TABLE IF NOT EXISTS users(chat_id INT, login TEXT, password TEXT, place TEXT, town TEXT, "
@@ -87,10 +87,10 @@ class Parse:
     def start_parse(self):
         logging.info('Start get page')
         settings = webdriver.ChromeOptions()
-        # settings.binary_location = f'{project_path}/tool_4/GoogleChromePortable.exe'
+        # settings.binary_location = f'{project_path}\\tool_4\\GoogleChromePortable.exe'
         if not self.DEBUG:
             settings.add_argument('headless')  # аргумент отвечает за запуск окна в скрытом режиме
-        driver = webdriver.Chrome(options=settings, executable_path=f'{project_path}/tool_driver/chromedriver')
+        driver = webdriver.Chrome(options=settings, executable_path=f'{project_path}\\tool_driver\\chromedriver.exe')
         driver.implicitly_wait(10)
         driver.maximize_window()
         driver.get("https://giseo.rkomi.ru/about.html")
@@ -286,8 +286,8 @@ class Parse:
         labels = ('Время', 'Урок')
 
         for i in range(6):
-            if os.path.exists(f'{project_path}/data/assets/user_{self.chat_id}/parse_schedule_{i}.png'):
-                os.remove(f'{project_path}/data/assets/user_{self.chat_id}/parse_schedule_{i}.png')
+            if os.path.exists(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_schedule_{i}.png'):
+                os.remove(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_schedule_{i}.png')
 
         for key in text.keys():
             if text[str(key)]:
@@ -315,12 +315,11 @@ class Parse:
         html = driver.page_source
         soup = BeautifulSoup(html, 'html5lib')
         table = soup.find('table', class_='hidden-mobile')
-        rows = None
+        rows = table.find_all('tr', class_='ng-scope')
+
         model = base_model.Duty.delete().where(base_model.Duty.chat_id == self.chat_id)
         model.execute()
 
-        if rows:
-            pass
         for item in rows:
             subject = item.find('td', class_='subject_data').find('a').text
             task = item.find('td', class_='theme_data').find('a').text
@@ -328,10 +327,6 @@ class Parse:
             # print(f'{subject} - {task} - {date_t} {type(date_t)}')
             d = base_model.Duty.create(chat_id=self.chat_id, subject=subject, task=task, date=date_t)
             d.save()
-        try:
-            rows = table.find_all('tr', class_='ng-scope')
-        except Exception as e:
-            logging.warning(e)
 
         logging.info(f'Successes save duty for user {self.chat_id}')
 
@@ -394,8 +389,8 @@ class Parse:
         if data:
             ImageConstructor.creation_image(data, labels, self.theme, self.chat_id, 'parse_final_marks.png')
         else:
-            if os.path.exists(f'{project_path}/data/assets/user_{self.chat_id}/parse_final_marks.png'):
-                os.remove(f'{project_path}/data/assets/user_{self.chat_id}/parse_final_marks.png')
+            if os.path.exists(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_final_marks.png'):
+                os.remove(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_final_marks.png')
 
         logging.info(f'Successes save final_marks for user {self.chat_id}')
 
@@ -440,8 +435,8 @@ class Parse:
         if data:
             ImageConstructor.creation_image(data, labels, self.theme, self.chat_id, 'parse_middle_marks_year.png')
         else:
-            if os.path.exists(f'{project_path}/data/assets/user_{self.chat_id}/parse_middle_marks_year.png'):
-                os.remove(f'{project_path}/data/assets/user_{self.chat_id}/parse_middle_marks_year.png')
+            if os.path.exists(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_middle_marks_year.png'):
+                os.remove(f'{project_path}\\data\\assets\\user_{self.chat_id}\\parse_middle_marks_year.png')
 
         logging.info(f'Successes save middle_marks_year for user {self.chat_id}')
 
@@ -531,9 +526,9 @@ class Parse:
                 ImageConstructor.creation_image(text, labels, self.theme, self.chat_id,
                                                 f'parse_middle_marks_period_{period}.png')
             else:
-                if os.path.exists(f'{project_path}/data/assets/user_{self.chat_id}/'
+                if os.path.exists(f'{project_path}\\data\\assets\\user_{self.chat_id}\\'
                                   f'parse_middle_marks_period_{period}.png'):
-                    os.remove(f'{project_path}/data/assets/user_{self.chat_id}/'
+                    os.remove(f'{project_path}\\data\\assets\\user_{self.chat_id}\\'
                               f'parse_middle_marks_period_{period}.png')
 
             logging.info(f'Successes save middle_marks_period for period {period} user {self.chat_id}')
