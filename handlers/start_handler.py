@@ -17,7 +17,7 @@ async def start(message: types.Message):
 
     # Если записи нет, то запускаем регистрацию пользователя
     else:
-        path_image = f'{project_path}\\data\\assets\\theme_1\\start_page.png'
+        path_image = f'{project_path}/data/assets/theme_1/start_page.png'
         await message.answer_photo(types.InputFile(path_image),
                                    caption=f'Привет, {message.chat.username}!\n'
                                            f'Я <b>Giseo бот</b>, помогу Вам следить за <u>успеваемостью</u> '

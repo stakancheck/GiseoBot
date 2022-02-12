@@ -19,7 +19,7 @@ def plot_image(data, theme, chat_id, file):
 
     plt.plot(x, y, 'o-r', alpha=0.7, label="first", lw=5, mec='b', mew=2, ms=10)
     plt.grid(True)
-    plt.savefig(f'{project_path}\\data\\assets\\user_{chat_id}\\{file}')
+    plt.savefig(f'{project_path}/data/assets/user_{chat_id}/{file}')
 
 
 def creation_image(data, labels, theme, chat_id, file):
@@ -61,7 +61,7 @@ def creation_image(data, labels, theme, chat_id, file):
     plt.subplots_adjust(left=0.5, right=0.6, top=0.9, bottom=0.1)
 
     # Save table as image in "assets" folder
-    plt.savefig(f'{project_path}\\data\\assets\\user_{chat_id}\\{file}', bbox_inches='tight',
+    plt.savefig(f'{project_path}/data/assets/user_{chat_id}/{file}', bbox_inches='tight',
                 facecolor=facecolor, dpi=150)
     # , pad_inches = 0.1
     plt.close()
