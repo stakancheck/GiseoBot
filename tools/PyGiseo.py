@@ -12,6 +12,7 @@ from tools import DbTools, base_model, ImageConstructor
 
 cipher_key = config('CIPHER_KEY')
 project_path = config('PATH_P')
+driver_path = config('DRIVER_PATH')
 
 logging.basicConfig(filename=f'{project_path}/data/basic/giseo_parser.log', level=logging.INFO, filemode='w',
                     format='%(asctime)s: %(levelname)s -> %(message)s')
@@ -90,7 +91,7 @@ class Parse:
         # settings.binary_location = f'{project_path}/tool_4/GoogleChromePortable.exe'
         if not self.DEBUG:
             settings.add_argument('headless')  # аргумент отвечает за запуск окна в скрытом режиме
-        driver = webdriver.Chrome(options=settings, executable_path=f'{project_path}/tool_driver/chromedriver')
+        driver = webdriver.Chrome(options=settings, executable_path=driver_path)
         driver.implicitly_wait(10)
         driver.maximize_window()
         driver.get("https://giseo.rkomi.ru/about.html")
