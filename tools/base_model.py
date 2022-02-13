@@ -26,11 +26,11 @@ class User(Model):
 class FinalMarks(Model):
     chat_id = ForeignKeyField(User)
     subject = TextField()
-    quarter_1 = IntegerField()
-    quarter_2 = IntegerField()
-    quarter_3 = IntegerField()
-    quarter_4 = IntegerField()
-    final_mark = IntegerField()
+    quarter_1 = IntegerField(null=True)
+    quarter_2 = IntegerField(null=True)
+    quarter_3 = IntegerField(null=True)
+    quarter_4 = IntegerField(null=True)
+    final_mark = IntegerField(null=True)
 
     class Meta:
         database = database
