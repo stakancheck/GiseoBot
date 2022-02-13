@@ -304,31 +304,36 @@ class Parse:
 
         logging.info(f'Start parse duty for user {self.chat_id}')
 
-        driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div/'
-                                     'div[2]/div/div/div[2]/div[1]/div[2]/div[3]/i').click()
-        try:
-            driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div/div[2]'
-                                         '/div/div/div[1]/past-mandatory/div/div[1]/i[1]').click()
-        except Exception as e:
-            logging.error(e)
+        # наведение на дневник и выбор из списка
+        ActionChains(driver).move_to_element(driver.find_element_by_xpath('/html/body/div[1]/div[4]'
+                                                                          '/nav/ul/li[4]/a')).perform()
+        driver.find_element_by_xpath('/html/body/div[1]/div[4]/nav/ul/li[4]/ul/li[1]/a').click()
+
+        # разворот списка
+        driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/div/div/div[2]/div/div[2]').click()
 
         html = driver.page_source
         soup = BeautifulSoup(html, 'html5lib')
         table = soup.find('table', class_='hidden-mobile')
-        rows = table.find_all('tr', class_='ng-scope')
 
         model = base_model.Duty.delete().where(base_model.Duty.chat_id == self.chat_id)
         model.execute()
 
-        for item in rows:
-            subject = item.find('td', class_='subject_data').find('a').text
-            task = item.find('td', class_='theme_data').find('a').text
-            date_t = item.find('td', class_='date_data').find('a').text
-            # print(f'{subject} - {task} - {date_t} {type(date_t)}')
-            d = base_model.Duty.create(chat_id=self.chat_id, subject=subject, task=task, date=date_t)
-            d.save()
+        rows = table.find_all('tr', class_='ng-scope')  # Danger !
 
-        logging.info(f'Successes save duty for user {self.chat_id}')
+        try:
+            for item in rows:
+                subject = item.find('td', class_='subject_data').find('a').text
+                task = item.find('td', class_='theme_data').find('a').text
+                date_t = item.find('td', class_='date_data').find('a').text
+                # print(f'{subject} - {task} - {date_t} {type(date_t)}')
+                d = base_model.Duty.create(chat_id=self.chat_id, subject=subject, task=task, date=date_t)
+                d.save()
+        except Exception as e:
+            logging.warning(f'No duty for user {self.chat_id}')
+
+        finally:
+            logging.info(f'Successes save duty for user {self.chat_id}')
 
     def parse_final(self, driver):
         """
