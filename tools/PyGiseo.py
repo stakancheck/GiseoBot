@@ -50,7 +50,7 @@ class Parse:
         self.progress = 0
 
         # Parameters for execute
-        self.TIME_SLEEP = 0.6
+        self.TIME_SLEEP = 1
         self.DEBUG = False
         self.RESPONSE = 'OK'
 
@@ -71,17 +71,6 @@ class Parse:
                                           place=self.place, town=self.town, type_school=self.type_school,
                                           school=self.school, theme=self.theme, date_update=self.date_update)
         new_user.save()
-        # data = (self.chat_id, self.login, self.password, self.place,
-        #         self.town, self.type_school, self.school, self.theme, self.date_update)
-        # with sql.connect(f'{project_path}/data/basic/data.db') as conn:
-        #     cur = conn.cursor()
-        #     cur.execute(
-        #         "CREATE TABLE IF NOT EXISTS users(chat_id INT, login TEXT, password TEXT, place TEXT, town TEXT, "
-        #         "type_school TEXT, school TEXT, theme TEXT, time_update DATETIME);")
-        #     conn.commit()
-        #     cur.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", data)
-        #     conn.commit()
-        #     cur.close()
         logging.info(f'Add user to data.db message_id {self.chat_id}')
         self.progress = 5
 
@@ -97,7 +86,7 @@ class Parse:
         driver.get("https://giseo.rkomi.ru/about.html")
         logging.info('Complete get page')
         self.progress = 10
-        time.sleep(0.7)
+        time.sleep(1)
         self.get_page(driver)
 
     def get_page(self, driver):
@@ -181,6 +170,7 @@ class Parse:
             self.parse_schedule(driver)
             time.sleep(self.TIME_SLEEP)
             self.parse_duty(driver)
+            time.sleep(self.TIME_SLEEP)
             self.quit_giseo(driver)
         except Exception as e:
             logging.error(e)
@@ -190,16 +180,17 @@ class Parse:
         ActionChains(driver).move_to_element(driver.find_element_by_xpath('/html/body/div[1]/div[4]'
                                                                           '/nav/ul/li[4]/a')).perform()
         driver.find_element_by_xpath('/html/body/div[1]/div[4]/nav/ul/li[4]/ul/li[1]/a').click()
-        time.sleep(1)
+        time.sleep(self.TIME_SLEEP + 2)
         html = driver.page_source
         # print(html)
         soup = BeautifulSoup(html, 'html5lib')
         days = soup.find_all('div', class_='day_table')
-        # pprint(days)
+        print(days)
         data = []
 
         for y in range(len(days)):
             date = days[y].find('span', class_='ng-binding').text
+            print(date)
             work = days[y].find_all('tr', class_='ng-scope')
             year = date[-7:-3]
             day_ = date[4:6].replace(' ', '')
@@ -227,28 +218,9 @@ class Parse:
                                   'time_start': time_start}
                     data.append(data_local)
 
-        # pprint(data)
+        print(data)
 
         data_local_tb = data
-        # for item in data:
-        #     # print(item['date'])
-        #     # 2021-10-04
-        #     # 2021-10-05
-        #
-        #     # print(f"{item['date']} ----- {datetime.date.today()}")
-        #     # item['date'] == str(datetime.date.today()) - datetime.timedelta(days=1) условие для вчера
-        #     date = datetime.datetime.strptime(item['date'], '%Y-%m-%d')
-        #     if datetime.date.today().weekday() != 6:
-        #         if item['date'] == str(datetime.date.today()) or \
-        #                 item['date'] == str(datetime.date.today() + datetime.timedelta(days=1)):
-        #             data_local_tb.append(item)
-        #     else:
-        #         if item['date'] == str(datetime.date.today() + datetime.timedelta(days=1)) or \
-        #                 item['date'] == str(datetime.date.today() + datetime.timedelta(days=2)):
-        #             data_local_tb.append(item)
-
-        # pprint(data_local_tb)
-        # print(str(datetime.date.today() - datetime.timedelta(days=1)))
 
         # Очистка базы от старых записей
         model = base_model.Schedule.delete().where(base_model.Schedule.chat_id == self.chat_id)
@@ -285,6 +257,7 @@ class Parse:
                 d.save()
 
         labels = ('Время', 'Урок')
+        print(text)
 
         for i in range(6):
             if os.path.exists(f'{project_path}/data/assets/user_{self.chat_id}/parse_schedule_{i}.png'):
@@ -294,7 +267,9 @@ class Parse:
             if text[str(key)]:
                 ImageConstructor.creation_image(text[str(key)], labels, self.theme, self.chat_id,
                                                 f'parse_schedule_{key}.png')
-                logging.info(f'Successes save schedule {key} for user {self.chat_id}')
+                logging.info(f'Successes save schedule day: {key} for user {self.chat_id}')
+
+        logging.info(f'Successes save schedule for user {self.chat_id}')
 
     def parse_duty(self, driver):
         """
@@ -332,9 +307,6 @@ class Parse:
                 d.save()
         except Exception as e:
             logging.warning(f'No duty for user {self.chat_id}')
-
-        finally:
-            logging.info(f'Successes save duty for user {self.chat_id}')
 
     def parse_final(self, driver):
         """
@@ -545,10 +517,8 @@ class Parse:
         :param driver: driver selenium
         :return:
         """
-
-        time.sleep(1)
         driver.find_element_by_xpath('/html/body/div[1]/div[1]/ul/li[3]/a/span[2]').click()
-        time.sleep(1)
+        time.sleep(0.7)
         driver.find_element_by_xpath('/html/body/div[5]/div[2]/div/div[3]/div/div/button[1]').click()
         logging.info(f'Successes quit from giseo for user {self.chat_id}')
         driver.quit()

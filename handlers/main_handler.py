@@ -82,11 +82,16 @@ async def functions(call: types.CallbackQuery):
 
         if homework:
             await DbTools.send_photo(call, f'homework.png')
-            await call.message.edit_caption(f'Ваше домашнее задание на <b>{name_of_day(day)}, {selected_day}</b>\n\n'
-                                            f'{homework}\n<b>Ваши просроченные задания:</b>\n\n{duty}',
-                                            reply_markup=homework_keyboard, parse_mode='html')
+            if duty:
+                await call.message.edit_caption(f'Ваше домашнее задание на <b>{name_of_day(day)}, {selected_day}</b>\n\n'
+                                                f'{homework}\n<b>Ваши просроченные задания:</b>\n\n{duty}',
+                                                reply_markup=homework_keyboard, parse_mode='html')
+            else:
+                await call.message.edit_caption(f'Ваше домашнее задание на <b>{name_of_day(day)}, {selected_day}</b>\n\n'
+                                                f'{homework}\n<b>У Вас нет просроченных заданий!</b>',
+                                                reply_markup=homework_keyboard, parse_mode='html')
         else:
-            await call.answer('Информации нет на сайте!')
+            await call.answer(f'У Вас нет домашнего задания на {name_of_day(day)}')
 
     if call.data == 'year':
         if await DbTools.send_photo(call, 'parse_middle_marks_year.png'):
